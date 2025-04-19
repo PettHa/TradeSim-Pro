@@ -1,0 +1,61 @@
+.api-status-container {
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+  
+  .api-status-content {
+    background-color: #fff8e6;
+    border: 1px solid #f0c000;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-radius: 0.5rem;
+  }
+  
+  .api-status-icon {
+    color: #f0c000;
+    flex-shrink: 0;
+  }
+  
+  .api-status-message {
+    flex-grow: 1;
+  }
+  
+  .api-status-message h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1rem;
+    color: #664d03;
+  }
+  
+  .api-status-message p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #664d03;
+  }
+  
+  .api-status-retry {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .api-status-retry:hover {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+  }
+  
+  .api-status-retry:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(209, 213, 219, 0.5);
+  }

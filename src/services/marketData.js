@@ -1,38 +1,44 @@
 /**
- * Markedsdata-tjeneste for frontend
- * Kobler til backend API eller bruker testdata
+ * Market data service for frontend
+ * Connects to backend API or uses generated test data
  */
 
 import { generateSampleData, generateAvailableSymbols as generateFakeSymbols } from './dataGenerator';
 
-// Hent API URL fra miljøvariabler (.env)
+// Get API URL from environment variables (.env)
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
 
-// Sjekk om API er tilgjengelig
+// Check if API is available
 let apiAvailable = false;
 
-// Test API-tilgjengelighet ved oppstart
+// Test API availability at startup
 (async function checkApiAvailability() {
   try {
     const response = await fetch(`${API_URL}/market-data?symbol=AAPL&days=1`);
     apiAvailable = response.ok;
-    console.log('Markedsdata API er', apiAvailable ? 'tilgjengelig' : 'ikke tilgjengelig');
+    console.log('Market data API is', apiAvailable ? 'available' : 'not available');
+    if (apiAvailable) {
+      console.log('Connected to backend API at', API_URL);
+    } else {
+      console.log('Using generated test data');
+    }
   } catch (error) {
-    console.log('Markedsdata API er ikke tilgjengelig - bruker testdata');
+    console.log('Market data API is not available - using test data');
+    console.error('Connection error:', error.message);
     apiAvailable = false;
   }
 })();
 
 /**
- * Henter markedsdata fra API eller genererer testdata
+ * Fetch market data from API or generate test data
  * 
- * @param {string} symbol - Handelssymbol (f.eks. 'AAPL')
- * @param {string} timeframe - Tidsramme ('1d', '1w', '1M')
- * @param {number} days - Antall dager av data som skal returneres
- * @returns {Promise<Array>} - Markedsdata
+ * @param {string} symbol - Trading symbol (e.g., 'AAPL')
+ * @param {string} timeframe - Timeframe ('1d', '1w', '1M')
+ * @param {number} days - Number of days of data to return
+ * @returns {Promise<Array>} - Market data
  */
 export const fetchMarketData = async (symbol = 'AAPL', timeframe = '1d', days = 100) => {
-  // Forsøk å bruke API hvis tilgjengelig
+  // Try to use API if available
   if (apiAvailable) {
     try {
       const response = await fetch(`${API_URL}/market-data?symbol=${symbol}&timeframe=${timeframe}&days=${days}`);
@@ -44,28 +50,28 @@ export const fetchMarketData = async (symbol = 'AAPL', timeframe = '1d', days = 
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Feil ved henting av markedsdata fra API:', error);
-      console.log('Fallback til genererte testdata');
-      // Fallback til testdata hvis API feiler
+      console.error('Error fetching market data from API:', error);
+      console.log('Falling back to generated test data');
+      // Fallback to test data if API fails
       return generateSampleData(days, symbol);
     }
   } else {
-    // Bruk genererte testdata hvis API ikke er tilgjengelig
-    console.log('Bruker genererte testdata for', symbol);
+    // Use generated test data if API is not available
+    console.log('Using generated test data for', symbol);
     return generateSampleData(days, symbol);
   }
 };
 
 /**
- * Hent markedsdata med tekniske indikatorer
+ * Fetch market data with technical indicators
  * 
- * @param {string} symbol - Handelssymbol
- * @param {string} timeframe - Tidsramme
- * @param {number} days - Antall dager
- * @returns {Promise<Array>} - Komplett markedsdata
+ * @param {string} symbol - Trading symbol
+ * @param {string} timeframe - Timeframe
+ * @param {number} days - Number of days
+ * @returns {Promise<Array>} - Complete market data
  */
 export const fetchCompleteMarketData = async (symbol = 'AAPL', timeframe = '1d', days = 100) => {
-  // Forsøk å bruke API hvis tilgjengelig
+  // Try to use API if available
   if (apiAvailable) {
     try {
       const response = await fetch(`${API_URL}/complete-market-data?symbol=${symbol}&timeframe=${timeframe}&days=${days}`);
@@ -77,24 +83,24 @@ export const fetchCompleteMarketData = async (symbol = 'AAPL', timeframe = '1d',
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Feil ved henting av komplett markedsdata fra API:', error);
-      // Fallback til vanlig markedsdata
+      console.error('Error fetching complete market data from API:', error);
+      // Fallback to regular market data
       return fetchMarketData(symbol, timeframe, days);
     }
   } else {
-    // Bruk genererte testdata hvis API ikke er tilgjengelig
+    // Use generated test data if API is not available
     return fetchMarketData(symbol, timeframe, days);
   }
 };
 
 /**
- * Hent tilgjengelige symboler/instrumenter
+ * Fetch available symbols/instruments
  * 
- * @param {string} keywords - Søkeord for å finne relevante symboler
- * @returns {Promise<Array>} - Liste over handelsinstrumenter
+ * @param {string} keywords - Search terms to find relevant symbols
+ * @returns {Promise<Array>} - List of trading instruments
  */
 export const fetchAvailableSymbols = async (keywords = '') => {
-  // Forsøk å bruke API hvis tilgjengelig
+  // Try to use API if available
   if (apiAvailable) {
     try {
       const response = await fetch(`${API_URL}/symbols?keywords=${keywords}`);
@@ -106,28 +112,28 @@ export const fetchAvailableSymbols = async (keywords = '') => {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Feil ved henting av symboler fra API:', error);
-      // Fallback til testdata
+      console.error('Error fetching symbols from API:', error);
+      // Fallback to test data
       return generateFakeSymbols();
     }
   } else {
-    // Bruk genererte symboler hvis API ikke er tilgjengelig
+    // Use generated symbols if API is not available
     return generateFakeSymbols();
   }
 };
 
 /**
- * Generer liste over tilgjengelige tidsrammer
+ * Generate list of available timeframes
  * 
- * @returns {Array} - Tilgjengelige tidsrammer
+ * @returns {Array} - Available timeframes
  */
 export const generateAvailableTimeframes = () => {
   return [
-    { id: '1d', name: '1 Dag' },
-    { id: '1w', name: '1 Uke' },
-    { id: '1M', name: '1 Måned' },
-    { id: '3M', name: '3 Måneder' },
-    { id: '1Y', name: '1 År' },
-    { id: 'ALL', name: 'All Tid' }
+    { id: '1d', name: '1 Day' },
+    { id: '1w', name: '1 Week' },
+    { id: '1M', name: '1 Month' },
+    { id: '3M', name: '3 Months' },
+    { id: '1Y', name: '1 Year' },
+    { id: 'ALL', name: 'All Time' }
   ];
 };

@@ -6,7 +6,8 @@ import StrategyConfig from './components/strategy/StrategyConfig/StrategyConfig'
 import PriceChart from './components/chart/PriceChart/PriceChart';
 import BacktestResults from './components/results/BacktestResults/BacktestResults';
 import TradeHistory from './components/results/TradeHistory/TradeHistory';
-import { fetchMarketData } from './services/marketData';
+import ApiStatus from './components/common/ApiStatus/ApiStatus';
+import { fetchMarketData, fetchCompleteMarketData } from './services/marketData';
 import { runBacktest } from './services/backtester';
 import { DEFAULT_STRATEGY } from './constants';
 
@@ -18,17 +19,59 @@ function App() {
   const [selectedSymbol, setSelectedSymbol] = useState('AAPL');
   const [selectedTimeframe, setSelectedTimeframe] = useState('1d');
   const [isLoadingData, setIsLoadingData] = useState(true);
+  const [apiConnected, setApiConnected] = useState(true);
+  const [apiError, setApiError] = useState('');
   
-  // Last data når komponenten monteres eller når symbol/timeframe endres
+  // Check API availability
+  const checkApiAvailability = async () => {
+    try {
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+      const response = await fetch(`${API_URL}/market-data?symbol=AAPL&days=1`);
+      const isConnected = response.ok;
+      setApiConnected(isConnected);
+      if (isConnected) {
+        setApiError('');
+      }
+      return isConnected;
+    } catch (error) {
+      setApiConnected(false);
+      setApiError(`Connection failed: ${error.message}`);
+      return false;
+    }
+  };
+
+  // Load data when component mounts or when symbol/timeframe changes
   useEffect(() => {
     const loadMarketData = async () => {
       setIsLoadingData(true);
+      
       try {
-        const data = await fetchMarketData(selectedSymbol, selectedTimeframe, 100);
-        setMarketData(data);
+        // Check API availability first
+        const isApiAvailable = await checkApiAvailability();
+        
+        if (isApiAvailable) {
+          // API is available, try to fetch complete market data
+          try {
+            const data = await fetchCompleteMarketData(selectedSymbol, selectedTimeframe, 100);
+            console.log(`Loaded complete market data for ${selectedSymbol} with ${data.length} days`);
+            setMarketData(data);
+          } catch (error) {
+            // Fallback to basic market data
+            console.warn('Failed to fetch complete market data, falling back to basic data');
+            const data = await fetchMarketData(selectedSymbol, selectedTimeframe, 100);
+            console.log(`Loaded basic market data for ${selectedSymbol} with ${data.length} days`);
+            setMarketData(data);
+          }
+        } else {
+          // API is not available, use generated test data
+          console.log('Using generated test data');
+          const data = await fetchMarketData(selectedSymbol, selectedTimeframe, 100);
+          setMarketData(data);
+        }
       } catch (error) {
-        console.error('Feil ved lasting av markedsdata:', error);
-        // Kunne vist en feilmelding til brukeren her
+        console.error('Error loading market data:', error);
+        setApiError(`Failed to load market data: ${error.message}`);
+        setMarketData([]); // Set empty data array to avoid undefined errors
       } finally {
         setIsLoadingData(false);
       }
@@ -85,9 +128,15 @@ function App() {
             </div>
             
             <div className="app-content">
+              <ApiStatus 
+                connected={apiConnected}
+                message={apiError}
+                onRetry={checkApiAvailability}
+              />
+              
               <div className="chart-controls">
                 <div className="timeframe-selector">
-                  <span className="timeframe-label">Tidsramme:</span>
+                  <span className="timeframe-label">Timeframe:</span>
                   <button 
                     className={`timeframe-btn ${selectedTimeframe === '1d' ? 'active' : ''}`}
                     onClick={() => handleTimeframeChange('1d')}
@@ -127,18 +176,18 @@ function App() {
                   onClick={handleRunBacktest}
                   disabled={isLoading || isLoadingData}
                 >
-                  {isLoading ? 'Kjører...' : 'Kjør Backtest'}
+                  {isLoading ? 'Running...' : 'Run Backtest'}
                 </button>
                 
                 <button className="btn btn-secondary">
-                  Lagre Strategi
+                  Save Strategy
                 </button>
                 
                 <button 
                   className="btn btn-secondary"
                   onClick={handleResetStrategy}
                 >
-                  Tilbakestill
+                  Reset
                 </button>
               </div>
               

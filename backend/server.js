@@ -1,5 +1,5 @@
 /**
- * Enkel Express-server for å betjene markedsdata API
+ * Simple Express server for serving market data API
  */
 
 import express from 'express';
@@ -9,16 +9,18 @@ import { fetchMarketData, fetchCompleteMarketData, fetchAvailableSymbols } from 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Aktiver CORS for alle endepunkter
+// Enable CORS for all endpoints
 app.use(cors());
 
 // Parse JSON request body
 app.use(express.json());
 
-// API-endepunkt for markedsdata
+// API endpoint for market data
 app.get('/api/market-data', async (req, res) => {
   try {
     const { symbol = 'AAPL', timeframe = '1d', days = 100 } = req.query;
+    
+    console.log(`Market data request for ${symbol}, timeframe: ${timeframe}, days: ${days}`);
     
     const data = await fetchMarketData(symbol, timeframe, parseInt(days));
     res.json(data);
@@ -28,10 +30,12 @@ app.get('/api/market-data', async (req, res) => {
   }
 });
 
-// API-endepunkt for komplett markedsdata med indikatorer
+// API endpoint for complete market data with indicators
 app.get('/api/complete-market-data', async (req, res) => {
   try {
     const { symbol = 'AAPL', timeframe = '1d', days = 100 } = req.query;
+    
+    console.log(`Complete market data request for ${symbol}, timeframe: ${timeframe}, days: ${days}`);
     
     const data = await fetchCompleteMarketData(symbol, timeframe, parseInt(days));
     res.json(data);
@@ -41,10 +45,12 @@ app.get('/api/complete-market-data', async (req, res) => {
   }
 });
 
-// API-endepunkt for tilgjengelige symboler
+// API endpoint for available symbols
 app.get('/api/symbols', async (req, res) => {
   try {
     const { keywords = '' } = req.query;
+    
+    console.log(`Symbols request with keywords: ${keywords}`);
     
     const data = await fetchAvailableSymbols(keywords);
     res.json(data);
@@ -54,8 +60,14 @@ app.get('/api/symbols', async (req, res) => {
   }
 });
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Start server
 app.listen(PORT, () => {
-  console.log(`Server kjører på port ${PORT}`);
-  console.log(`Markedsdata API tilgjengelig på http://localhost:${PORT}/api/market-data`);
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Market data API available at http://localhost:${PORT}/api/market-data`);
+  console.log(`Health check endpoint available at http://localhost:${PORT}/api/health`);
 });
