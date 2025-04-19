@@ -30,3 +30,5 @@ yarn-error.log*
 # Backend
 /backend/node_modules
 /backend/market_data
+prosjekt_innhold.txt
+compress.py

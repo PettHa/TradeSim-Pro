@@ -31,7 +31,7 @@
   
   .symbol-selector {
     position: relative;
-    z-index: 1000;
+    z-index: 1000; /* Ensure dropdown is above other content */
   }
   
   .selected-symbol {
@@ -57,7 +57,7 @@
   }
   
   .symbol-arrow {
-    font-size: 0.625rem;
+    /* font-size: 0.625rem; */ /* Removed for default size */
     color: #6b7280;
   }
   
@@ -69,9 +69,10 @@
     max-width: 90vw;
     background-color: white;
     border-radius: 0.375rem;
+    border: 1px solid #e5e7eb; /* Added border */
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     overflow: hidden;
-    z-index: 10;
+    z-index: 1010; /* Ensure it's above symbol-selector if needed */
   }
   
   .symbol-search {
@@ -84,6 +85,7 @@
   
   .search-icon {
     color: #6b7280;
+    flex-shrink: 0; /* Prevent icon shrinking */
   }
   
   .symbol-search input {
@@ -91,6 +93,7 @@
     outline: none;
     width: 100%;
     font-size: 0.875rem;
+    background-color: transparent; /* Ensure input bg is transparent */
   }
   
   .symbol-list {
@@ -106,9 +109,11 @@
     cursor: pointer;
     transition: background-color 0.2s;
     align-items: center;
+    font-size: 0.875rem; /* Consistent font size */
   }
   
-  .symbol-item:hover {
+  .symbol-item:hover,
+  .symbol-item[aria-selected="true"] { /* Style selected item */
     background-color: #f3f4f6;
   }
   
@@ -118,7 +123,7 @@
   }
   
   .symbol-name {
-    font-size: 0.875rem;
+    /* font-size: 0.875rem; */ /* Inherit from symbol-item */
     color: #6b7280;
     white-space: nowrap;
     overflow: hidden;
@@ -129,18 +134,49 @@
     font-size: 0.75rem;
     padding: 0.125rem 0.375rem;
     border-radius: 9999px;
-    background-color: #f3f4f6;
-    color: #6b7280;
+    background-color: #e5e7eb; /* Slightly darker than hover */
+    color: #4b5563; /* Darker text */
     text-transform: uppercase;
+    white-space: nowrap; /* Prevent wrapping */
   }
   
+  /* Combined styles for loading/error/no symbols message */
   .no-symbols {
-    padding: 1.5rem;
+    padding: 1.5rem 1rem; /* Adjusted padding */
     text-align: center;
     color: #6b7280;
     font-style: italic;
+    font-size: 0.875rem; /* Match item font size */
+    display: flex; /* Added for centering spinner */
+    align-items: center; /* Added for centering spinner */
+    justify-content: center; /* Added for centering spinner */
   }
-  
+
+  /* Error specific style (optional) */
+  .symbol-error {
+      color: #ef4444; /* Red color for errors */
+      font-style: normal;
+  }
+
+  /* --- Spinner Style (Moved from JS) --- */
+  .loading-spinner-inline {
+    display: inline-block;
+    width: 1em; /* Relative size */
+    height: 1em; /* Relative size */
+    vertical-align: -0.125em;
+    border: 0.15em solid currentColor; /* Use text color */
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border .75s linear infinite;
+    margin-right: 0.5em;
+  }
+
+  @keyframes spinner-border {
+    to { transform: rotate(360deg); }
+  }
+  /* --- End Spinner Style --- */
+
+
   .header-actions {
     display: flex;
     gap: 0.5rem;
@@ -178,17 +214,21 @@
     .header-content {
       flex-direction: column;
       gap: 1rem;
-      align-items: flex-start;
+      align-items: stretch; /* Stretch items like symbol selector */
+    }
+
+    .header-brand {
+        align-self: flex-start; /* Align brand left */
     }
     
-    .symbol-selector {
-      align-self: stretch;
-    }
+    /* Symbol selector already stretches */
     
     .symbol-dropdown {
+      /* Adjust dropdown position/width on mobile */
       left: 0;
       right: 0;
-      width: 100%;
+      width: auto; /* Let it fill available space based on max-width */
+      max-width: calc(100vw - 2rem); /* Prevent edge bleeding */
     }
     
     .header-actions {

@@ -1,49 +1,68 @@
+/* --- Fil: src/components/common/Panel/Panel.css --- */
+
 .panel {
     background-color: white;
     border-radius: 0.5rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    margin-bottom: 1rem;
-    overflow: hidden;
-  }
-  
-  .panel-header {
+    /* Redusert skygge for et lettere utseende */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--gray-200); /* Tynn kantlinje */
+    margin-bottom: 1rem; /* Standardisert marg mellom paneler */
+    overflow: hidden; /* For å holde border-radius */
+}
+
+.panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem 1rem;
-    background-color: #f3f4f6;
+    padding: 0.75rem 1rem; /* Litt mindre padding */
+    /* Lysere bakgrunn for header */
+    background-color: var(--gray-50); /* Bruker --gray-50 for konsistens */
+    border-bottom: 1px solid var(--gray-200); /* Tynnere skillelinje */
     cursor: pointer;
     user-select: none;
     transition: background-color 0.2s;
-  }
-  
-  .panel-header:hover {
-    background-color: #e5e7eb;
-  }
-  
-  .panel-title {
-    font-size: 1rem;
-    font-weight: 500;
-    color: #374151;
+}
+
+.panel-header:hover {
+    background-color: var(--gray-100); /* Enda lysere hover */
+}
+
+.panel-title {
+    font-size: 1rem; /* Samme størrelse, men tykkere */
+    font-weight: 600;
+    color: var(--gray-800); /* Mørkere tittel */
     margin: 0;
-  }
-  
-  .panel-toggle {
+}
+
+.panel-toggle {
     display: flex;
     align-items: center;
     justify-content: center;
     background: none;
     border: none;
-    color: #6b7280;
+    color: var(--gray-500); /* Litt lysere ikonfarge */
     cursor: pointer;
     padding: 0.25rem;
-    transition: color 0.2s;
-  }
-  
-  .panel-toggle:hover {
-    color: #374151;
-  }
-  
-  .panel-body {
+    border-radius: 50%; /* Sirkulær knapp */
+    transition: color 0.2s, background-color 0.2s;
+}
+
+.panel-toggle:hover {
+    color: var(--gray-700);
+    background-color: var(--gray-200); /* Lett bakgrunn på hover */
+}
+
+.panel-body {
     padding: 1rem;
-  }
+    /* Legg til en subtil topp-kant hvis panelet er åpent, for visuell separasjon */
+    border-top: 1px solid var(--gray-100);
+}
+
+/* Hvis headeren ikke har border-bottom når panelet er lukket */
+.panel:not(:has(.panel-body)) .panel-header {
+    border-bottom: none;
+}
+/* Hvis panelet er åpent, fjern bunn-border på header */
+.panel:has(.panel-body) .panel-header {
+     border-bottom: 1px solid var(--gray-200); /* Behøver kanskje denne uansett */
+}

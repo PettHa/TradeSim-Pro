@@ -1,87 +1,125 @@
+/* --- Fil: src/App.css --- */
+
 .app {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    background-color: var(--gray-100); /* Litt mørkere bakgrunn */
   }
   
   .app-main {
     flex: 1;
-    padding: 2rem 0;
+    padding: 1.5rem 0; /* Justert padding */
   }
   
   .container {
-    max-width: 1200px;
+    max-width: 1400px; /* Litt bredere container for mer plass */
     margin: 0 auto;
-    padding: 0 1rem;
+    padding: 0 1rem; /* Padding på sidene */
   }
   
+  /* --- Viktig Layout Endring --- */
   .app-grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
+    grid-template-columns: 1fr; /* Mobil først: én kolonne */
+    gap: 1.5rem; /* Økt gap */
   }
   
-  @media (min-width: 992px) {
+  @media (min-width: 1024px) { /* Justert breakpoint for sidefelt */
     .app-grid {
-      grid-template-columns: 350px 1fr;
+      /* Sidefelt med fast bredde, innhold tar resten */
+      grid-template-columns: 380px minmax(0, 1fr); /* Sidefelt fast, innhold fleksibelt */
+      gap: 2rem;
     }
   }
   
   .app-sidebar {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem; /* Økt gap */
+    /* Sidefeltet skal ikke trenge spesiell posisjonering */
   }
   
   .app-content {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    min-width: 0; /* VIKTIG: Hindrer innhold i å presse grid for bredt */
+    /* Innholdsområdet tar plassen det får */
   }
+  /* --- Slutt Layout Endring --- */
+  
   
   .chart-controls {
     display: flex;
-    justify-content: flex-end;
-    margin-bottom: 0.5rem;
+    flex-wrap: wrap; /* Tillat wrapping */
+    justify-content: space-between; /* Spre kontrollene */
+    align-items: center;
+    gap: 1rem; /* Mellomrom */
+    padding: 0.5rem;
+    background-color: #fff; /* Hvit bakgrunn for kontroller */
+    border-radius: 0.375rem;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 0; /* Fjerner ekstra bunnmarg */
   }
   
   .timeframe-selector {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.5rem; /* Mer gap mellom knapper */
   }
   
   .timeframe-label {
     font-size: 0.875rem;
-    color: #4b5563;
+    color: var(--gray-600); /* Bruker CSS-variabel */
+    font-weight: 500;
+    margin-right: 0.25rem;
   }
   
   .timeframe-btn {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-    border: 1px solid #d1d5db;
+    padding: 0.375rem 0.6rem; /* Litt mer padding */
+    font-size: 0.8rem; /* Litt større font */
+    border: 1px solid var(--gray-300);
     background-color: #fff;
-    color: #4b5563;
+    color: var(--gray-700);
     border-radius: 0.25rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease-in-out; /* Mykere overgang */
   }
   
-  .timeframe-btn:hover {
-    background-color: #f3f4f6;
+  .timeframe-btn:hover:not(:disabled) {
+    background-color: var(--gray-100); /* Lysere hover */
+    border-color: var(--gray-400);
   }
   
   .timeframe-btn.active {
-    background-color: #3b82f6;
+    background-color: var(--primary-color);
     color: white;
-    border-color: #3b82f6;
+    border-color: var(--primary-color);
+    font-weight: 500;
   }
+  .timeframe-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+  }
+  .timeframe-loading {
+      font-size: 0.8rem;
+      color: var(--gray-500);
+      font-style: italic;
+  }
+  
   
   .backtest-controls {
     display: flex;
+    flex-wrap: wrap; /* Tillat wrapping */
     gap: 1rem;
     justify-content: center;
-    margin: 1.5rem 0;
+    align-items: center; /* Sentrer vertikalt */
+    margin: 1rem 0; /* Mindre marg */
+    padding: 1rem;
+    background-color: #fff;
+    border-radius: 0.375rem;
+    box-shadow: var(--shadow-sm);
   }
   
   .results-section {
@@ -90,191 +128,120 @@
     gap: 1.5rem;
   }
   
-  /* Button styles */
+  /* --- Generelle Stiler (Button, Card, Form, Table, Badge, Loaders) --- */
+  /* Disse ser stort sett greie ut, men vi justerer Card litt */
+  
+  /* Button styles (uendret) */
   .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
-    border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      font-weight: 500;
+      font-size: 0.875rem; /* Standardisert knappestørrelse */
+      line-height: 1.25rem;
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+      border: 1px solid transparent;
+      white-space: nowrap; /* Hindre tekstbryting */
+  }
+  .btn:focus { outline: none; }
+  .btn:disabled { opacity: 0.65; cursor: not-allowed; }
+  .btn svg { margin-right: 0.5rem; }
+  .btn-primary { background-color: var(--primary-color); color: white; }
+  .btn-primary:hover:not(:disabled) { background-color: var(--primary-dark); }
+  .btn-primary:focus { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); }
+  .btn-secondary { background-color: white; color: var(--gray-700); border-color: var(--gray-300); }
+  .btn-secondary:hover:not(:disabled) { background-color: var(--gray-50); border-color: var(--gray-400); }
+  .btn-secondary:focus { box-shadow: 0 0 0 3px rgba(209, 213, 219, 0.5); }
+  .btn-danger { background-color: var(--danger-color); color: white; }
+  .btn-danger:hover:not(:disabled) { background-color: #dc2626; }
+  .btn-danger:focus { box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.5); }
+  /* Små knapper (brukt i StrategyConfig) */
+  .btn-sm {
+      padding: 0.25rem 0.75rem; /* Justert padding */
+      font-size: 0.75rem;
+      line-height: 1rem;
+  }
+  .btn-sm svg {
+      margin-right: 0.25rem; /* Mindre ikon-margin */
+      width: 14px; /* Mindre ikon */
+      height: 14px;
   }
   
-  .btn:disabled {
-    opacity: 0.65;
-    cursor: not-allowed;
-  }
   
-  .btn svg {
-    margin-right: 0.5rem;
-  }
-  
-  .btn-primary {
-    background-color: var(--primary-color);
-    color: white;
-  }
-  
-  .btn-primary:hover:not(:disabled) {
-    background-color: var(--primary-dark);
-  }
-  
-  .btn-secondary {
-    background-color: white;
-    color: var(--gray-700);
-    border-color: var(--gray-300);
-  }
-  
-  .btn-secondary:hover:not(:disabled) {
-    background-color: var(--gray-50);
-    border-color: var(--gray-400);
-  }
-  
-  .btn-danger {
-    background-color: var(--danger-color);
-    color: white;
-  }
-  
-  .btn-danger:hover:not(:disabled) {
-    background-color: #dc2626;
-  }
-  
-  /* Card styles */
+  /* Card styles (justert) */
   .card {
     background-color: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    border-radius: 0.5rem; /* Samme som Panel */
+    /* Bruker samme skygge som Panel */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--gray-200); /* Tynn kantlinje */
     overflow: hidden;
+    margin-bottom: 1rem; /* Standardisert marg */
   }
-  
   .card-header {
-    padding: 1rem;
+    padding: 0.75rem 1rem; /* Justert padding */
+    /* Bruker Panel sin header-bakgrunn for konsistens */
     background-color: var(--gray-50);
     border-bottom: 1px solid var(--gray-200);
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
-  
+  .card-title { /* Lagt til stil for tittel i card-header */
+      font-size: 1rem;
+      font-weight: 600; /* Tykkere tittel */
+      color: var(--gray-800);
+      margin: 0;
+  }
   .card-body {
     padding: 1rem;
   }
   
-  /* Form styles */
-  .form-group {
-    margin-bottom: 1rem;
+  /* Form styles (uendret, men sjekk bruk) */
+  .form-group { margin-bottom: 1rem; }
+  .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--gray-700); font-size: 0.875rem; }
+  .form-control { display: block; width: 100%; padding: 0.5rem 0.75rem; font-size: 0.875rem; line-height: 1.5; color: var(--gray-900); background-color: #fff; background-clip: padding-box; border: 1px solid var(--gray-300); border-radius: 0.375rem; transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; }
+  .form-control:focus { border-color: var(--primary-light); outline: 0; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); }
+  .form-control-sm { padding: 0.25rem 0.5rem; font-size: 0.875rem; height: auto; } /* Forenklet sm */
+  .form-check { display: flex; align-items: center; margin-bottom: 0.5rem; }
+  .form-check-input { margin-right: 0.5rem; cursor: pointer; width: 1em; height: 1em;} /* Standard størrelse */
+  .form-check-label { cursor: pointer; font-size: 0.875rem; color: var(--gray-800); }
+  
+  /* Tables (uendret) */
+  .table { width: 100%; border-collapse: collapse; background-color: #fff; } /* Hvit bakgrunn for tabell */
+  .table th, .table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--gray-200); font-size: 0.875rem; }
+  .table th { font-weight: 500; color: var(--gray-600); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.05em; background-color: var(--gray-50); }
+  .table tbody tr:hover { background-color: var(--gray-50); }
+  .table-container { /* Container for å tillate scroll på små skjermer */
+      overflow-x: auto;
+      border: 1px solid var(--gray-200);
+      border-radius: 0.375rem;
+      box-shadow: var(--shadow-sm);
   }
   
-  .form-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: var(--gray-700);
-  }
   
-  .form-control {
-    display: block;
-    width: 100%;
-    padding: 0.5rem 0.75rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    color: var(--gray-900);
-    background-color: #fff;
-    background-clip: padding-box;
-    border: 1px solid var(--gray-300);
-    border-radius: 0.375rem;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  }
+  /* Badge (uendret) */
+  .badge { display: inline-block; padding: 0.25em 0.6em; font-size: 0.75em; font-weight: 600; line-height: 1; text-align: center; white-space: nowrap; vertical-align: baseline; border-radius: 9999px; }
+  .badge-success { background-color: rgba(16, 185, 129, 0.1); color: #06764f; } /* Mørkere tekst */
+  .badge-danger { background-color: rgba(239, 68, 68, 0.1); color: #b91c1c; } /* Mørkere tekst */
+  .badge-warning { background-color: rgba(245, 158, 11, 0.1); color: #b45309; } /* Mørkere tekst */
   
-  .form-control:focus {
-    border-color: var(--primary-light);
-    outline: 0;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
-  }
   
-  .form-check {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.5rem;
-  }
-  
-  .form-check-input {
-    margin-right: 0.5rem;
-    cursor: pointer;
-  }
-  
-  .form-check-label {
-    cursor: pointer;
-  }
-  
-  /* Tables */
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .table th,
-  .table td {
-    padding: 0.75rem;
-    text-align: left;
-    border-bottom: 1px solid var(--gray-200);
-  }
-  
-  .table th {
-    font-weight: 500;
-    color: var(--gray-600);
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-  }
-  
-  .table tbody tr:hover {
-    background-color: var(--gray-50);
-  }
-  
-  /* Badge */
-  .badge {
-    display: inline-block;
-    padding: 0.25em 0.5em;
-    font-size: 0.75em;
-    font-weight: 600;
-    line-height: 1;
-    text-align: center;
+  /* Loaders (uendret) */
+  .loading-spinner { display: inline-block; width: 1.5rem; height: 1.5rem; border: 3px solid rgba(59, 130, 246, 0.3); border-left-color: var(--primary-color); border-radius: 50%; animation: spinner 0.75s linear infinite; }
+  @keyframes spinner { to { transform: rotate(360deg); } }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
     white-space: nowrap;
-    vertical-align: baseline;
-    border-radius: 9999px;
-  }
-  
-  .badge-success {
-    background-color: rgba(16, 185, 129, 0.2);
-    color: var(--success-color);
-  }
-  
-  .badge-danger {
-    background-color: rgba(239, 68, 68, 0.2);
-    color: var(--danger-color);
-  }
-  
-  .badge-warning {
-    background-color: rgba(245, 158, 11, 0.2);
-    color: var(--warning-color);
-  }
-  
-  /* Loaders */
-  .loading-spinner {
-    display: inline-block;
-    width: 1.5rem;
-    height: 1.5rem;
-    border: 2px solid rgba(0, 0, 0, 0.1);
-    border-left-color: var(--primary-color);
-    border-radius: 50%;
-    animation: spinner 0.75s linear infinite;
-  }
-  
-  @keyframes spinner {
-    to {
-      transform: rotate(360deg);
-    }
+    border-width: 0;
   }

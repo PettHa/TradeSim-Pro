@@ -1,68 +1,73 @@
+/* --- Fil: src/components/results/BacktestResults/BacktestResults.css --- */
+
 .backtest-results {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-  }
-  
-  .stats-grid {
+    gap: 1.5rem; /* Redusert gap */
+}
+
+.stats-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    /* Mer responsivt grid */
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 1rem;
-  }
-  
-  @media (min-width: 768px) {
-    .stats-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-  
-  @media (min-width: 1024px) {
-    .stats-grid {
-      grid-template-columns: repeat(6, 1fr);
-    }
-  }
-  
-  .stat-card {
-    background-color: #f9fafb;
+}
+
+.stat-card {
+    background-color: white; /* Hvit bakgrunn */
     border-radius: 0.375rem;
-    padding: 1rem;
+    padding: 0.75rem 1rem; /* Justert padding */
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  }
-  
-  .stat-title {
-    font-size: 0.75rem;
-    color: #6b7280;
+    gap: 0.25rem; /* Mindre gap internt */
+    /* Fjerner skygge for et flatere utseende, legger til tynn kant */
+    box-shadow: none;
+    border: 1px solid var(--gray-200);
+    text-align: center; /* Sentrer teksten */
+}
+
+.stat-title {
+    font-size: 0.7rem; /* Mindre tittel */
+    color: var(--gray-600); /* Litt mørkere */
     font-weight: 500;
-  }
-  
-  .stat-value {
-    font-size: 1.25rem;
+    text-transform: uppercase; /* Store bokstaver */
+    letter-spacing: 0.04em; /* Litt spacing */
+}
+
+.stat-value {
+    font-size: 1.125rem; /* Litt mindre verdi */
     font-weight: 600;
-    color: #1f2937;
-  }
-  
-  .stat-value.positive {
-    color: #10b981;
-  }
-  
-  .stat-value.negative {
-    color: #ef4444;
-  }
-  
-  .section-title {
+    color: var(--gray-800); /* Mørkere standardfarge */
+    line-height: 1.3; /* Bedre linjehøyde */
+}
+
+.stat-value.positive {
+    color: var(--success-color); /* Bruker standard suksessfarge */
+}
+
+.stat-value.negative {
+    color: var(--danger-color); /* Bruker standard farefarge */
+}
+
+.section-title {
     font-size: 1.125rem;
     font-weight: 600;
-    color: #1f2937;
-    margin-top: 0;
+    color: var(--gray-800);
+    margin-top: 0.5rem; /* Litt mer luft over */
     margin-bottom: 1rem;
-  }
-  
-  .report-actions {
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--gray-200); /* Skillelinje */
+}
+
+.equity-section {
+    /* Ingen spesifikk styling nødvendig her nå */
+}
+
+.report-actions {
     display: flex;
     gap: 1rem;
-    justify-content: flex-end;
-    margin-top: 1.5rem;
-  }
+    justify-content: flex-start; /* Juster til venstre */
+    margin-top: 1rem; /* Mindre marg */
+    padding-top: 1rem;
+    border-top: 1px solid var(--gray-200); /* Skillelinje */
+}
