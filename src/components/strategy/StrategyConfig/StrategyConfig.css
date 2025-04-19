@@ -1,0 +1,82 @@
+.strategy-config {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .strategy-position {
+    margin-bottom: 1.5rem;
+  }
+  
+  .strategy-position-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .position-badge {
+    display: flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  
+  .position-badge-icon {
+    margin-right: 0.25rem;
+  }
+  
+  .position-badge-long {
+    background-color: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+  }
+  
+  .position-badge-short {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+  }
+  
+  .indicator-group {
+    background-color: #f9fafb;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .indicator-group.long-entry {
+    border-left: 3px solid #10b981;
+  }
+  
+  .indicator-group.long-exit {
+    border-left: 3px solid #ef4444;
+  }
+  
+  .indicator-group.short-entry {
+    border-left: 3px solid #ef4444;
+  }
+  
+  .indicator-group.short-exit {
+    border-left: 3px solid #10b981;
+  }
+  
+  .indicator-group-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .indicator-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  
+  .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }

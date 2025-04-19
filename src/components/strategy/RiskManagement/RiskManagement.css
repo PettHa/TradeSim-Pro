@@ -1,0 +1,45 @@
+.risk-management {
+    margin-bottom: 1rem;
+  }
+  
+  .risk-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .risk-section:last-child {
+    margin-bottom: 0;
+  }
+  
+  .risk-section-title {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #374151;
+  }
+  
+  .risk-section-icon {
+    margin-right: 0.5rem;
+    color: #6b7280;
+  }
+  
+  .risk-params {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  @media (min-width: 768px) {
+    .risk-params {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  
+  .form-text {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: #6b7280;
+  }

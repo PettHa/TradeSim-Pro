@@ -1,0 +1,79 @@
+.indicator-config {
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+  }
+  
+  .indicator-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background-color: #f3f4f6;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .indicator-name {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+  }
+  
+  .indicator-badge {
+    background-color: #3b82f6;
+    color: white;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  
+  .indicator-name-input {
+    flex: 1;
+    max-width: 200px;
+  }
+  
+  .indicator-remove-btn {
+    background: none;
+    border: none;
+    color: #6b7280;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    line-height: 1;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  
+  .indicator-remove-btn:hover {
+    background-color: #fee2e2;
+    color: #dc2626;
+  }
+  
+  .indicator-body {
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .indicator-param {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .indicator-param-label {
+    min-width: 100px;
+    font-size: 0.875rem;
+    color: #4b5563;
+  }
+  
+  .form-control-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    height: 2rem;
+  }

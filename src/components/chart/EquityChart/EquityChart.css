@@ -1,0 +1,51 @@
+.equity-chart-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .equity-summary {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  @media (min-width: 768px) {
+    .equity-summary {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  
+  .equity-summary-item {
+    background-color: #f9fafb;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .equity-summary-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-weight: 500;
+  }
+  
+  .equity-summary-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+  }
+  
+  .equity-summary-value.positive {
+    color: #10b981;
+  }
+  
+  .equity-summary-value.negative {
+    color: #ef4444;
+  }
+  
+  .equity-chart {
+    width: 100%;
+    height: 300px;
+  }
