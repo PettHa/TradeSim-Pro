@@ -39,6 +39,7 @@ if (!fs.existsSync(DATA_DIR)) {
  * @param {string} timeframe - Timeframe ('1d', '1w', '1M')
  * @param {number} days - Number of days of data to return
  * @returns {Promise<Array>} - Market data
+ * @throws {Error} - If API call fails and no cached data is available
  */
 export const fetchMarketData = async (symbol = 'AAPL', timeframe = '1d', days = 100) => {
   const cacheFilePath = path.join(DATA_DIR, `${symbol}_${timeframe}.csv`);
@@ -147,9 +148,8 @@ export const fetchMarketData = async (symbol = 'AAPL', timeframe = '1d', days = 
       return loadDataFromCSV(cacheFilePath, days);
     }
     
-    // If no cached data is available, generate sample data
-    console.log(`No cached data available, generating sample data for ${symbol}`);
-    return generateSampleData(days, symbol);
+    // If no cached data is available, throw an error
+    throw new Error(`Failed to fetch market data for ${symbol}. No cached data available.`);
   }
 };
 
@@ -158,6 +158,7 @@ export const fetchMarketData = async (symbol = 'AAPL', timeframe = '1d', days = 
  * 
  * @param {string} symbol - Trading symbol
  * @returns {Promise<Array>} - SMA data
+ * @throws {Error} - If API call fails and no cached data is available
  */
 export const fetchSMA = async (symbol = 'AAPL') => {
   const cacheFilePath = path.join(DATA_DIR, `${symbol}_sma20.csv`);
@@ -214,8 +215,8 @@ export const fetchSMA = async (symbol = 'AAPL') => {
       return loadDataFromCSV(cacheFilePath);
     }
     
-    // If no cached data, return empty array
-    return [];
+    // If no cached data, throw error
+    throw new Error(`Failed to fetch SMA data for ${symbol}. No cached data available.`);
   }
 };
 
@@ -224,6 +225,7 @@ export const fetchSMA = async (symbol = 'AAPL') => {
  * 
  * @param {string} symbol - Trading symbol
  * @returns {Promise<Array>} - RSI data
+ * @throws {Error} - If API call fails and no cached data is available
  */
 export const fetchRSI = async (symbol = 'AAPL') => {
   const cacheFilePath = path.join(DATA_DIR, `${symbol}_rsi.csv`);
@@ -280,8 +282,8 @@ export const fetchRSI = async (symbol = 'AAPL') => {
       return loadDataFromCSV(cacheFilePath);
     }
     
-    // If no cached data, return empty array
-    return [];
+    // If no cached data, throw error
+    throw new Error(`Failed to fetch RSI data for ${symbol}. No cached data available.`);
   }
 };
 
@@ -292,6 +294,7 @@ export const fetchRSI = async (symbol = 'AAPL') => {
  * @param {string} timeframe - Timeframe
  * @param {number} days - Number of days
  * @returns {Promise<Array>} - Complete market data
+ * @throws {Error} - If API call fails and no cached data is available
  */
 export const fetchCompleteMarketData = async (symbol = 'AAPL', timeframe = '1d', days = 100) => {
   try {
@@ -345,6 +348,7 @@ export const fetchCompleteMarketData = async (symbol = 'AAPL', timeframe = '1d',
  * 
  * @param {string} keywords - Search terms to find relevant symbols
  * @returns {Promise<Array>} - List of trading instruments
+ * @throws {Error} - If API call fails and no cached data is available
  */
 export const fetchAvailableSymbols = async (keywords = '') => {
   const cacheFilePath = path.join(DATA_DIR, `symbols_${keywords.replace(/[^a-zA-Z0-9]/g, '_')}.csv`);
@@ -361,7 +365,7 @@ export const fetchAvailableSymbols = async (keywords = '') => {
   
   try {
     if (!keywords) {
-      // If no keywords, use default symbols
+      // If no keywords, use default symbols (this is configuration, not generated data)
       const defaultSymbols = getDefaultSymbols();
       saveDataToCSV(path.join(DATA_DIR, 'symbols_default.csv'), defaultSymbols);
       return defaultSymbols;
@@ -411,14 +415,14 @@ export const fetchAvailableSymbols = async (keywords = '') => {
       return loadDataFromCSV(cacheFilePath);
     }
     
-    // Return default symbols as a last resort
+    // If no cached data, return default symbols (this is configuration, not generated data)
     const defaultSymbols = getDefaultSymbols();
     return defaultSymbols;
   }
 };
 
 /**
- * Generate list of available timeframes
+ * List of available timeframes
  * 
  * @returns {Array} - Available timeframes
  */
@@ -490,7 +494,7 @@ function getSymbolType(avType) {
 }
 
 /**
- * Default list of symbols
+ * Default list of symbols (this is configuration, not generated data)
  */
 function getDefaultSymbols() {
   return [
@@ -642,133 +646,7 @@ function parseCSVLine(line) {
   return result;
 }
 
-/**
- * Generate sample market data
- * 
- * @param {number} days - Number of days to generate
- * @param {string} symbol - Trading symbol
- * @returns {Array} - Array of price data objects
- */
-function generateSampleData(days = 100, symbol = 'DEMO') {
-  const data = [];
-  const today = new Date();
-  let basePrice = getBasePrice(symbol);
-  
-  // Generate data starting from 'days' ago up to today
-  for (let i = days; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - i);
-    
-    // Add some randomness to price movement
-    const changePercent = (Math.random() - 0.5) * 2; // -1% to +1%
-    basePrice = basePrice * (1 + changePercent / 100);
-    
-    // Daily price volatility
-    const open = basePrice * (1 + (Math.random() - 0.5) / 50);
-    const high = Math.max(open * (1 + Math.random() / 25), open);
-    const low = Math.min(open * (1 - Math.random() / 25), open);
-    const close = (open + high + low + basePrice) / 4; // Weighted towards base price
-    
-    // For demo consistency, make price and close the same
-    const price = close;
-    
-    // Generate realistic volume
-    const volume = Math.floor(getBaseVolume(symbol) * (0.5 + Math.random()));
-    
-    // Calculate some indicators
-    let sma20 = null;
-    let rsi = null;
-    
-    // Only calculate SMA after we have enough data points
-    if (i <= days - 20) {
-      const priceSlice = data.slice(data.length - 19).map(d => d.price);
-      priceSlice.push(price);
-      sma20 = priceSlice.reduce((sum, p) => sum + p, 0) / 20;
-    }
-    
-    // Generate RSI (simplified random value between 30-70 with some trend following)
-    if (data.length > 0) {
-      const prevRSI = data[data.length - 1].rsi;
-      if (prevRSI !== null) {
-        // RSI tends to revert to mean (50) with some randomness
-        rsi = prevRSI + (50 - prevRSI) * 0.1 + (Math.random() - 0.5) * 10;
-        rsi = Math.min(Math.max(rsi, 10), 90); // Clamp between 10 and 90
-      } else {
-        rsi = 40 + Math.random() * 20; // Initial RSI between 40-60
-      }
-    } else {
-      rsi = 40 + Math.random() * 20; // Initial RSI between 40-60
-    }
-    
-    data.push({
-      date: date.toISOString().split('T')[0],
-      symbol,
-      open: parseFloat(open.toFixed(2)),
-      high: parseFloat(high.toFixed(2)),
-      low: parseFloat(low.toFixed(2)),
-      close: parseFloat(close.toFixed(2)),
-      price: parseFloat(price.toFixed(2)),
-      volume,
-      sma20: sma20 !== null ? parseFloat(sma20.toFixed(2)) : null,
-      rsi: rsi !== null ? parseFloat(rsi.toFixed(2)) : null
-    });
-  }
-  
-  return data;
-}
-
-/**
- * Get base price for a symbol
- * @private
- */
-function getBasePrice(symbol) {
-  const priceMap = {
-    'AAPL': 180,
-    'MSFT': 350,
-    'GOOGL': 130,
-    'AMZN': 120,
-    'TSLA': 250,
-    'META': 200,
-    'NVDA': 450,
-    'JPM': 140,
-    'NFLX': 380,
-    'DIS': 95,
-    'BTCUSD': 28000,
-    'ETHUSD': 1800,
-    'XRPUSD': 0.5,
-    'EURUSD': 1.1,
-    'GBPUSD': 1.3,
-    'USDJPY': 150,
-    'DEMO': 100
-  };
-  
-  return priceMap[symbol] || 100 + Math.random() * 100;
-}
-
-/**
- * Get base volume for a symbol
- * @private
- */
-function getBaseVolume(symbol) {
-  const volumeMap = {
-    'AAPL': 80000000,
-    'MSFT': 25000000,
-    'GOOGL': 15000000,
-    'AMZN': 30000000,
-    'TSLA': 100000000,
-    'META': 20000000,
-    'NVDA': 40000000,
-    'JPM': 10000000,
-    'NFLX': 8000000,
-    'DIS': 12000000,
-    'BTCUSD': 25000,
-    'ETHUSD': 15000,
-    'XRPUSD': 5000000,
-    'EURUSD': 120000,
-    'GBPUSD': 80000,
-    'USDJPY': 95000,
-    'DEMO': 50000
-  };
-  
-  return volumeMap[symbol] || 20000000;
-}
+// Removed all functions that generate sample data:
+// - generateSampleData()
+// - getBasePrice()
+// - getBaseVolume()

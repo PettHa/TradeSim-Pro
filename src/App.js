@@ -49,24 +49,31 @@ function App() {
         // Check API availability first
         const isApiAvailable = await checkApiAvailability();
         
-        if (isApiAvailable) {
-          // API is available, try to fetch complete market data
+        if (!isApiAvailable) {
+          // API is not available, show error
+          setApiError('Backend API is not available. Please ensure the backend service is running.');
+          setMarketData([]);
+          setIsLoadingData(false);
+          return;
+        }
+        
+        // API is available, try to fetch complete market data
+        try {
+          const data = await fetchCompleteMarketData(selectedSymbol, selectedTimeframe, 100);
+          console.log(`Loaded complete market data for ${selectedSymbol} with ${data.length} days`);
+          setMarketData(data);
+        } catch (error) {
+          // Fallback to basic market data
+          console.warn('Failed to fetch complete market data, falling back to basic data');
           try {
-            const data = await fetchCompleteMarketData(selectedSymbol, selectedTimeframe, 100);
-            console.log(`Loaded complete market data for ${selectedSymbol} with ${data.length} days`);
-            setMarketData(data);
-          } catch (error) {
-            // Fallback to basic market data
-            console.warn('Failed to fetch complete market data, falling back to basic data');
             const data = await fetchMarketData(selectedSymbol, selectedTimeframe, 100);
             console.log(`Loaded basic market data for ${selectedSymbol} with ${data.length} days`);
             setMarketData(data);
+          } catch (basicError) {
+            console.error('Error loading basic market data:', basicError);
+            setApiError(`Failed to load market data: ${basicError.message}`);
+            setMarketData([]); // Set empty data array to avoid undefined errors
           }
-        } else {
-          // API is not available, use generated test data
-          console.log('Using generated test data');
-          const data = await fetchMarketData(selectedSymbol, selectedTimeframe, 100);
-          setMarketData(data);
         }
       } catch (error) {
         console.error('Error loading market data:', error);
@@ -81,12 +88,18 @@ function App() {
   }, [selectedSymbol, selectedTimeframe]);
   
   const handleRunBacktest = async () => {
+    if (marketData.length === 0) {
+      setApiError('Cannot run backtest: No market data available.');
+      return;
+    }
+    
     setIsLoading(true);
     try {
       const backtestResults = await runBacktest(strategy, marketData);
       setResults(backtestResults);
     } catch (error) {
       console.error('Backtest error:', error);
+      setApiError(`Backtest error: ${error.message}`);
       // Handle error state
     } finally {
       setIsLoading(false);
@@ -174,7 +187,7 @@ function App() {
                 <button 
                   className="btn btn-primary"
                   onClick={handleRunBacktest}
-                  disabled={isLoading || isLoadingData}
+                  disabled={isLoading || isLoadingData || marketData.length === 0}
                 >
                   {isLoading ? 'Running...' : 'Run Backtest'}
                 </button>

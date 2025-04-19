@@ -1,12 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Settings, HelpCircle, Search } from 'lucide-react';
-import { generateAvailableSymbols } from '../../services/dataGenerator';
+// Remove import for generated data
+// import { generateAvailableSymbols } from '../../services/dataGenerator';
+import { fetchAvailableSymbols } from '../../services/marketData'; // Use API service instead
 import './Header.css';
 
 const Header = ({ selectedSymbol = 'AAPL', onSymbolChange }) => {
   const [showSymbolSearch, setShowSymbolSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [availableSymbols, setAvailableSymbols] = useState(generateAvailableSymbols());
+  const [availableSymbols, setAvailableSymbols] = useState([]);
+  const [isLoadingSymbols, setIsLoadingSymbols] = useState(true);
+  const [symbolError, setSymbolError] = useState('');
+  
+  // Load available symbols when component mounts - fetch from API only
+  useEffect(() => {
+    const loadSymbols = async () => {
+      setIsLoadingSymbols(true);
+      try {
+        const symbols = await fetchAvailableSymbols();
+        setAvailableSymbols(symbols);
+        setSymbolError('');
+      } catch (error) {
+        console.error('Error loading symbols:', error);
+        setSymbolError('Failed to load available symbols. Please check API connection.');
+        setAvailableSymbols([]);
+      } finally {
+        setIsLoadingSymbols(false);
+      }
+    };
+    
+    loadSymbols();
+  }, []);
   
   const handleSymbolClick = (symbol) => {
     if (onSymbolChange) {
@@ -55,7 +79,11 @@ const Header = ({ selectedSymbol = 'AAPL', onSymbolChange }) => {
                 </div>
                 
                 <div className="symbol-list">
-                  {filteredSymbols.length > 0 ? (
+                  {isLoadingSymbols ? (
+                    <div className="symbol-loading">Loading symbols...</div>
+                  ) : symbolError ? (
+                    <div className="symbol-error">{symbolError}</div>
+                  ) : filteredSymbols.length > 0 ? (
                     filteredSymbols.map((symbol) => (
                       <div 
                         key={symbol.symbol} 
