@@ -1,0 +1,36 @@
+.visual-strategy-builder {
+    width: 100%;
+    /* Høyde må settes for at React Flow skal vises */
+    height: 70vh; /* Juster etter behov */
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    margin-bottom: 1rem;
+  }
+  
+  .visual-strategy-controls {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 10px;
+  }
+  
+  /* Styling for React Flow UI-elementer (valgfritt, men anbefalt) */
+  .visual-strategy-builder .react-flow__minimap {
+    background-color: #fff;
+    border: 1px solid #ccc;
+  }
+  
+  .visual-strategy-builder .react-flow__controls {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .visual-strategy-builder .react-flow__controls-button {
+      background: #fff;
+      border: 1px solid #ccc;
+      width: 30px;
+      height: 30px;
+  }
+  .visual-strategy-builder .react-flow__controls-button:hover {
+      background: #f0f0f0;
+  }
