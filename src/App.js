@@ -6,15 +6,13 @@ import './index.css'; // Globale stiler og CSS-variabler
 
 import Header from './layout/Header/Header';
 import Footer from './layout/Footer/Footer';
-// --- ERSTATT IMPORT ---
-// import StrategyConfig from './components/strategy/StrategyConfig/StrategyConfig';
-import VisualStrategyBuilder from './components/strategy/VisualBuilder/VisualStrategyBuilder'; // Importer den nye
-// --- SLUTT ERSTATT IMPORT ---
+import VisualStrategyBuilder from './components/strategy/VisualBuilder/VisualStrategyBuilder'; // Visuell strategi-bygger
 import PriceChart from './components/chart/PriceChart/PriceChart';
 import BacktestResults from './components/results/BacktestResults/BacktestResults';
 import TradeHistory from './components/results/TradeHistory/TradeHistory';
 import ApiStatus from './components/common/ApiStatus/ApiStatus';
 import Button from './components/common/Button/Button'; // Felles knappekomponent
+import FullscreenModal from './components/common/FullscreenModal/FullscreenModal'; // Fullskjermsmodal
 
 import { fetchCompleteMarketData, fetchAvailableTimeframes, fetchAvailableSymbols, retryApiCheck } from './services/marketData';
 import { runBacktest } from './services/backtester';
@@ -44,6 +42,8 @@ function App() {
   const [isLoadingData, setIsLoadingData] = useState(true); // Laster markedsdata?
   const [isLoadingTimeframes, setIsLoadingTimeframes] = useState(true); // Laster tidsrammer?
   const [apiError, setApiError] = useState(''); // API-feilmelding
+  const [visualStrategyActive, setVisualStrategyActive] = useState(true); // Viser visuell eller klassisk?
+  const [isFullscreenBuilderOpen, setIsFullscreenBuilderOpen] = useState(false); // Fullskjerms strategi-bygger
 
   // --- Effekt for å lagre strategi i localStorage ---
   // TODO: Dette lagrer fortsatt den GAMLE strategy-strukturen. Må oppdateres.
@@ -132,8 +132,6 @@ function App() {
     alert("Running backtest from the visual builder is not implemented yet!");
     console.warn("[App.js] handleRunBacktest called, but visual parsing/execution is needed.");
     return;
-    // --- SLUTT DEAKTIVERT ---
-
     /* // Gammel logikk (må tilpasses):
     if (!marketData || marketData.length === 0) {
       setApiError('Cannot run backtest: No market data available.');
@@ -203,6 +201,16 @@ function App() {
     }
   }, []);
 
+  // Toggle mellom visuell og klassisk strategi-bygging
+  const toggleStrategyMode = useCallback(() => {
+    setVisualStrategyActive(prev => !prev);
+  }, []);
+
+  // Toggle fullskjerms strategi-bygger
+  const toggleFullscreenBuilder = useCallback(() => {
+    setIsFullscreenBuilderOpen(prev => !prev);
+  }, []);
+
   // Beregn om API er operasjonelt (Uendret)
   const isApiOperational = !isLoadingTimeframes && availableTimeframes.length > 0;
 
@@ -227,15 +235,37 @@ function App() {
 
           <div className="app-grid">
 
-            {/* Sidebar (NÅ MED VISUAL BUILDER) */}
+            {/* Sidebar (MED VISUELL STRATEGI-BYGGER) */}
             <div className="app-sidebar">
-              {/* --- ERSTATT KOMPONENT --- */}
-              <VisualStrategyBuilder
-                  // strategy={strategy} // Send lagret node/edge data hit senere
-                  // onStrategyChange={handleStrategyChange} // Send callback for save/change senere
-                  disabled={!isApiOperational || isBacktestLoading}
-              />
-              {/* --- SLUTT ERSTATT KOMPONENT --- */}
+            <Panel title={visualStrategyActive ? "Strategy Builder (Visual)" : "Strategy Builder (Classic)"}>
+                <div className="mb-4 text-center flex justify-between">
+                  <button 
+                    onClick={toggleStrategyMode}
+                    className="btn btn-sm btn-secondary"
+                  >
+                    Switch to {visualStrategyActive ? "Classic" : "Visual"} Mode
+                  </button>
+                  
+                  {visualStrategyActive && (
+                    <button 
+                      onClick={toggleFullscreenBuilder}
+                      className="btn btn-sm btn-primary"
+                    >
+                      Fullscreen Editor
+                    </button>
+                  )}
+                </div>
+
+                {visualStrategyActive ? (
+                  <VisualStrategyBuilder
+                    disabled={!isApiOperational || isBacktestLoading}
+                  />
+                ) : (
+                  <div className="p-4 text-center bg-gray-100 rounded">
+                    <p>Classic strategy builder is not available in this version.</p>
+                  </div>
+                )}
+              </Panel>
             </div>
 
             {/* Main Content Area (Charts, Results) */}
@@ -257,7 +287,7 @@ function App() {
                 data={marketData}
                 isLoading={isLoadingData}
                 symbol={selectedSymbol}
-                indicatorsInChart={['sma20', 'rsi', 'volume']} // Disse kommer kanskje ikke fra backend lenger?
+                indicatorsInChart={['sma20', 'rsi', 'volume']}
               />
 
               {/* Backtest Controls */}
@@ -265,15 +295,17 @@ function App() {
                 <Button
                   variant="primary"
                   onClick={handleRunBacktest}
-                  // Deaktivert hvis backtest kjører, data lastes, API nede ELLER hvis visuell builder brukes (foreløpig)
                   disabled={isBacktestLoading || isLoadingData || !marketData || marketData.length === 0 || !isApiOperational}
                 >
                   {isBacktestLoading ? ( <> <span className="loading-spinner-inline" role="status" aria-hidden="true"></span> Running... </> ) : 'Run Backtest'}
                 </Button>
-                 {/* TODO: Save-knapp må lagre den visuelle strategien */}
-                 <Button variant="secondary" disabled={!isApiOperational || isBacktestLoading}> Save Strategy </Button>
-                 {/* TODO: Reset-knapp må resette den visuelle strategien */}
-                 <Button variant="secondary" onClick={handleResetStrategy} disabled={isBacktestLoading}> Reset Strategy </Button>
+                <Button 
+                  variant="secondary" 
+                  onClick={handleResetStrategy} 
+                  disabled={isBacktestLoading}
+                >
+                  Reset Strategy
+                </Button>
               </div>
 
               {/* Results Area */}
@@ -295,6 +327,19 @@ function App() {
       </main>
 
       <Footer />
+    {/* Fullscreen Strategy Builder Modal */}
+    <FullscreenModal
+        isOpen={isFullscreenBuilderOpen}
+        onClose={toggleFullscreenBuilder}
+        title="Trading Strategy Builder"
+      >
+        <div className="h-full">
+          <VisualStrategyBuilder
+            disabled={!isApiOperational || isBacktestLoading}
+            fullscreen={true}
+          />
+        </div>
+      </FullscreenModal>
     </div> // End app
   );
 }
